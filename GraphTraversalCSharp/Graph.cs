@@ -49,15 +49,6 @@ namespace GraphTraversalCSharp
         {
         }
 
-        public void Insert(Vertex<T> vertex)
-        {
-            List<Vertex<T>> list = new List<Vertex<T>>
-            {
-                vertex
-            };
-            AdjacencyList.Add(list);
-        }
-
         public List<Vertex<T>> BreadthFirstSearch(Vertex<T> source)
         {
             foreach (var list in AdjacencyList)
