@@ -25,14 +25,15 @@ namespace GraphTraversalCSharp
                 {
                     List<Vertex<T>> list = new List<Vertex<T>>();
                     var array = str.Split();
-                    foreach (var item in array)
-                    {
-                        int intVar = int.Parse(item);
-                        if (intVar > Size)
-                            throw new Exception("The vertex is missing");
-                        Vertex<T> curVertex = new Vertex<T>(intVar);
-                        list.Add(curVertex);
-                    }
+                    if (!string.IsNullOrEmpty(str))
+                        foreach (var item in array)
+                        {
+                            int intVar = int.Parse(item);
+                            if (intVar > Size)
+                                throw new Exception("The vertex is missing");
+                            Vertex<T> curVertex = new Vertex<T>(intVar);
+                            list.Add(curVertex);
+                        }
                     AdjacencyList.Add(list);
                 }
             }
@@ -83,7 +84,7 @@ namespace GraphTraversalCSharp
                         vertices.Add(vertex);
                     }
                 }
-            }            
+            }
             return vertices;
         }
 
@@ -155,10 +156,5 @@ namespace GraphTraversalCSharp
         {
             return AdjacencyList.Count == 0;
         }
-    }
-
-    public class Edge<T> where T : IComparable
-    {
-
     }
 }
