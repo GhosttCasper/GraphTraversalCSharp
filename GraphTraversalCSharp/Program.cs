@@ -15,37 +15,33 @@ namespace GraphTraversalCSharp
     {
         static void Main(string[] args)
         {
-            Graph<int> graph = ReadFile("input.txt");
+            Graph graph = ReadFile("input.txt");
             int vertexIndex = ReadFileWithNumber("input2.txt");
-            List<Vertex<int>> vertices = new List<Vertex<int>>();
+            List<Vertex> vertices = new List<Vertex>();
             if (graph != null && !graph.IsEmpty())
                 vertices = ProcessGraph(graph, vertexIndex);
             WriteFile(vertices, "output.txt");
         }
 
-        private static List<Vertex<int>> ProcessGraph(Graph<int> graph, int index)
+        private static List<Vertex> ProcessGraph(Graph graph, int index)
         {
-            Vertex<int> vertex = new Vertex<int>(index);
-            List<Vertex<int>> vertices = graph.BreadthFirstSearch(vertex);
+            Vertex vertex = new Vertex(index);
+            List<Vertex> vertices = graph.BreadthFirstSearch(vertex);
             return vertices;
         }
 
-        private static Graph<int> ReadFile(string fileName)
+        private static Graph ReadFile(string fileName)
         {
-            Graph<int> graph = new Graph<int>();
+            Graph graph = new Graph();
             using (StreamReader reader = new StreamReader(fileName))
             {
-                var numberStr = reader.ReadLine();
-                if (numberStr == null)
-                    throw new Exception("String is empty (ReadFile)");
-                var array = numberStr.Split();
-                int size = int.Parse(array[0]);
+                int size = ReadNumber(reader);
                 string[] numbersStrs = new string[size];
                 for (int i = 0; i < size; i++)
                 {
                     numbersStrs[i] = reader.ReadLine();
                 }
-                graph = new Graph<int>(size, numbersStrs);
+                graph = new Graph(size, numbersStrs);
             }
             return graph;
         }
@@ -54,16 +50,21 @@ namespace GraphTraversalCSharp
         {
             using (StreamReader reader = new StreamReader(fileName))
             {
-                var numberStr = reader.ReadLine();
-                if (numberStr == null)
-                    throw new Exception("String is empty (ReadFileWithNumber)");
-                var array = numberStr.Split();
-                int number = int.Parse(array[0]);
-                return number;
+                return ReadNumber(reader);
             }
         }
 
-        private static void WriteFile(List<Vertex<int>> vertices, string fileName)
+        private static int ReadNumber(StreamReader reader)
+        {
+            var numberStr = reader.ReadLine();
+            if (numberStr == null)
+                throw new Exception("String is empty (ReadNumber)");
+            var array = numberStr.Split();
+            int number = int.Parse(array[0]);
+            return number;
+        }
+
+        private static void WriteFile(List<Vertex> vertices, string fileName)
         {
             using (StreamWriter writer = new StreamWriter(fileName))
             {
