@@ -13,12 +13,18 @@ namespace GraphTraversalCSharp
     public class Graph //<T> where T : IComparable
     {
         public List<List<Vertex>> AdjacencyList = new List<List<Vertex>>();
+        public List<Vertex> VerticesList = new List<Vertex>();
         public int Time;
         public int Size;
 
         public Graph(int size, string[] strs)
         {
             Size = size;
+            for (int i = 0; i < size; i++)
+            {
+                VerticesList.Add(new Vertex(i + 1));
+            }
+
             try
             {
                 foreach (var str in strs)
@@ -31,9 +37,10 @@ namespace GraphTraversalCSharp
                             int intVar = int.Parse(item);
                             if (intVar > Size)
                                 throw new Exception("The vertex is missing");
-                            Vertex curVertex = new Vertex(intVar);
+                            Vertex curVertex = VerticesList.Find(vertex => vertex.Index == intVar);
                             list.Add(curVertex);
                         }
+
                     AdjacencyList.Add(list);
                 }
             }
@@ -53,17 +60,17 @@ namespace GraphTraversalCSharp
         /// <summary>
         /// Поиск в ширину. Сложность 0(V + Е)
         /// </summary>
-        public List<Vertex> BreadthFirstSearch(Vertex source)
+        public List<Vertex> BreadthFirstSearch(int sourceIndex)
         {
-            foreach (var list in AdjacencyList)
+            foreach (var vertex in VerticesList)
             {
-                foreach (var vertex in list)
-                {
-                    vertex.IsDiscovered = false;
-                    vertex.Distance = int.MinValue;
-                    vertex.Parent = null;
-                }
+                vertex.IsDiscovered = false;
+                vertex.Distance = int.MinValue;
+                vertex.Parent = null;
             }
+
+            Vertex source = VerticesList.Find(vertex => vertex.Index == sourceIndex);
+
             source.IsDiscovered = true;
             source.Distance = 0;
             source.Parent = null;
@@ -81,13 +88,14 @@ namespace GraphTraversalCSharp
                     if (vertex.IsDiscovered == false)
                     {
                         vertex.IsDiscovered = true;
-                        vertex.Distance = curVertex.Distance++;
+                        vertex.Distance = curVertex.Distance + 1;
                         vertex.Parent = curVertex;
                         queue.Enqueue(vertex);
                         vertices.Add(vertex);
                     }
                 }
             }
+
             return vertices;
         }
 
@@ -98,11 +106,13 @@ namespace GraphTraversalCSharp
                 str += source.Index + " ";
                 return str;
             }
+
             if (end.Parent == null)
             {
                 Console.WriteLine("Path from source to end is missing");
                 return str;
             }
+
             PrintPath(source, end.Parent, str);
             str += end.Index + " ";
             return str;
@@ -122,6 +132,7 @@ namespace GraphTraversalCSharp
                     vertex.Parent = null;
                 }
             }
+
             Time = 0;
             foreach (var list in AdjacencyList)
             {
@@ -148,6 +159,7 @@ namespace GraphTraversalCSharp
                     DFSVisit(curVertex, vertices);
                 }
             }
+
             Time++;
             vertex.FinishingTime = Time;
             vertices.Add(vertex);
@@ -167,6 +179,7 @@ namespace GraphTraversalCSharp
                     DFSVisit(curVertex);
                 }
             }
+
             Time++;
             vertex.FinishingTime = Time;
         }
@@ -181,6 +194,7 @@ namespace GraphTraversalCSharp
                     vertex.Parent = null;
                 }
             }
+
             Time = 0;
             List<Vertex> vertices = new List<Vertex>(Size);
             foreach (var list in AdjacencyList)
@@ -193,7 +207,7 @@ namespace GraphTraversalCSharp
                     DFSVisit(vertex);
         }
 
-        public List<Vertex> TopologicalSort()  // only for directed acyclic graph
+        public List<Vertex> TopologicalSort() // only for directed acyclic graph
         {
             return DepthFirstSearch();
         }

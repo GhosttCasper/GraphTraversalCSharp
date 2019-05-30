@@ -25,8 +25,7 @@ namespace GraphTraversalCSharp
 
         private static List<Vertex> ProcessGraph(Graph graph, int index)
         {
-            Vertex vertex = new Vertex(index);
-            List<Vertex> vertices = graph.BreadthFirstSearch(vertex);
+            List<Vertex> vertices = graph.BreadthFirstSearch(index);
             return vertices;
         }
 
@@ -68,15 +67,15 @@ namespace GraphTraversalCSharp
         {
             using (StreamWriter writer = new StreamWriter(fileName))
             {
-                HashSet<int> hashSet = new HashSet<int>();
+                /*HashSet<int> hashSet = new HashSet<int>();
                 foreach (var vertex in vertices)
                 {
                     hashSet.Add(vertex.Index);
-                }
+                }*/
                 string indexes = "";
-                foreach (var index in hashSet)
+                foreach (var vertex in vertices)
                 {
-                    indexes += index.ToString();
+                    indexes += vertex.Index.ToString();
                     indexes += " ";
                 }
                 writer.WriteLine(indexes);
