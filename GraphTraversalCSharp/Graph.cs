@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,18 +13,20 @@ namespace GraphTraversalCSharp
 {
     public class Graph //<T> where T : IComparable
     {
-        public List<List<Vertex>> AdjacencyList = new List<List<Vertex>>();
-        public List<Vertex> VerticesList = new List<Vertex>();
-        public int Time;
-        public int Size;
+        private List<List<Vertex>> AdjacencyList;
+        private List<Vertex> VerticesList;
+        private int Time;
+        public int Size { get; }
 
         public Graph(int size, string[] strs)
         {
             Size = size;
-            for (int i = 0; i < size; i++)
+            VerticesList = new List<Vertex>();
+            for (int i = 1; i <= Size; i++)
             {
-                VerticesList.Add(new Vertex(i + 1));
+                VerticesList.Add(new Vertex(i));
             }
+            AdjacencyList = new List<List<Vertex>>();
 
             try
             {
@@ -34,10 +37,11 @@ namespace GraphTraversalCSharp
                     if (!string.IsNullOrEmpty(str))
                         foreach (var item in array)
                         {
-                            int intVar = int.Parse(item);
+                            int intVar = int.Parse(item) - 1;
                             if (intVar > Size)
                                 throw new Exception("The vertex is missing");
-                            Vertex curVertex = VerticesList.Find(vertex => vertex.Index == intVar);
+
+                            Vertex curVertex = VerticesList[intVar];//vertex => vertex.Index == intVar
                             list.Add(curVertex);
                         }
 
@@ -69,17 +73,16 @@ namespace GraphTraversalCSharp
                 vertex.Parent = null;
             }
 
-            Vertex source = VerticesList.Find(vertex => vertex.Index == sourceIndex);
-
+            Vertex source = VerticesList[sourceIndex - 1]; //Find(vertex => vertex.Index == sourceIndex)
             source.IsDiscovered = true;
             source.Distance = 0;
             source.Parent = null;
 
-            List<Vertex> vertices = new List<Vertex>();
-            vertices.Add(source);
+            List<Vertex> result = new List<Vertex> { source };
 
             Queue<Vertex> queue = new Queue<Vertex>();
             queue.Enqueue(source);
+
             while (queue.Count != 0)
             {
                 Vertex curVertex = queue.Dequeue();
@@ -91,12 +94,12 @@ namespace GraphTraversalCSharp
                         vertex.Distance = curVertex.Distance + 1;
                         vertex.Parent = curVertex;
                         queue.Enqueue(vertex);
-                        vertices.Add(vertex);
+                        result.Add(vertex);
                     }
                 }
             }
 
-            return vertices;
+            return result;
         }
 
         public string PrintPath(Vertex source, Vertex end, string str)
@@ -123,7 +126,7 @@ namespace GraphTraversalCSharp
         /// </summary>
         public List<Vertex> DepthFirstSearch()
         {
-            List<Vertex> vertices = new List<Vertex>();
+            List<Vertex> result = new List<Vertex>(Size);
             foreach (var list in AdjacencyList)
             {
                 foreach (var vertex in list)
@@ -139,31 +142,32 @@ namespace GraphTraversalCSharp
                 foreach (var vertex in list)
                 {
                     if (vertex.IsDiscovered == false)
-                        vertices = DFSVisit(vertex, vertices);
+                        result = DFSVisit(vertex, result);
                 }
             }
 
-            return vertices;
+            return result;
         }
 
-        private List<Vertex> DFSVisit(Vertex vertex, List<Vertex> vertices)
+        private List<Vertex> DFSVisit(Vertex vertex, List<Vertex> result)
         {
             Time++;
             vertex.DiscoveryTime = Time;
             vertex.IsDiscovered = true;
+
             foreach (var curVertex in AdjacencyList[vertex.Index - 1])
             {
                 if (curVertex.IsDiscovered == false)
                 {
                     curVertex.Parent = vertex;
-                    DFSVisit(curVertex, vertices);
+                    DFSVisit(curVertex, result);
                 }
             }
 
             Time++;
             vertex.FinishingTime = Time;
-            vertices.Add(vertex);
-            return vertices;
+            result.Add(vertex);
+            return result;
         }
 
         private void DFSVisit(Vertex vertex)
@@ -171,6 +175,7 @@ namespace GraphTraversalCSharp
             Time++;
             vertex.DiscoveryTime = Time;
             vertex.IsDiscovered = true;
+
             foreach (var curVertex in AdjacencyList[vertex.Index - 1])
             {
                 if (curVertex.IsDiscovered == false)
@@ -246,6 +251,31 @@ namespace GraphTraversalCSharp
         public bool IsEmpty()
         {
             return AdjacencyList.Count == 0;
+        }
+
+        public void SaveTxtFormatGraph(string graphFile)
+        {
+            using (StreamWriter writer = new StreamWriter(graphFile))
+            {
+                writer.WriteLine(Size);
+                writer.WriteLine(ToTxtFile());
+            }
+        }
+
+        public string ToTxtFile()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < AdjacencyList.Count; i++)
+            {
+                for (int j = 0; j < AdjacencyList[i].Count; j++)
+                {
+                    sb.Append(i + 1 + " ");
+                    sb.Append(AdjacencyList[i][j].Index);
+                    sb.Append(Environment.NewLine);
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }

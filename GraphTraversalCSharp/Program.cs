@@ -17,10 +17,14 @@ namespace GraphTraversalCSharp
         {
             Graph graph = ReadFile("input.txt");
             int vertexIndex = ReadFileWithNumber("input2.txt");
+
             List<Vertex> vertices = new List<Vertex>();
             if (graph != null && !graph.IsEmpty())
                 vertices = ProcessGraph(graph, vertexIndex);
             WriteFile(vertices, "output.txt");
+
+            string outputGraphFile = "..\\..\\output.txt";
+            graph?.SaveTxtFormatGraph(outputGraphFile);
         }
 
         private static List<Vertex> ProcessGraph(Graph graph, int index)
@@ -58,6 +62,7 @@ namespace GraphTraversalCSharp
             var numberStr = reader.ReadLine();
             if (numberStr == null)
                 throw new Exception("String is empty (ReadNumber)");
+
             var array = numberStr.Split();
             int number = int.Parse(array[0]);
             return number;
@@ -67,12 +72,7 @@ namespace GraphTraversalCSharp
         {
             using (StreamWriter writer = new StreamWriter(fileName))
             {
-                /*HashSet<int> hashSet = new HashSet<int>();
-                foreach (var vertex in vertices)
-                {
-                    hashSet.Add(vertex.Index);
-                }*/
-                string indexes = "";
+               string indexes = "";
                 foreach (var vertex in vertices)
                 {
                     indexes += vertex.Index.ToString();

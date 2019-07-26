@@ -8,12 +8,12 @@ namespace GraphTraversalCSharp
 {
     public class Vertex //<T> where T : IComparable
     {
-        public bool IsDiscovered; // Color
-        public Vertex Parent;
-        public int Distance;
-        public int Index;
-        public int DiscoveryTime; // timestamp
-        public int FinishingTime;
+        public int Index { get; }
+        public bool IsDiscovered { get; set; } // Color
+        public Vertex Parent { get; set; }
+        public int Distance { get; set; }
+        public int DiscoveryTime { get; set; } // timestamp
+        public int FinishingTime { get; set; }
 
         public Vertex(int index)
         {
