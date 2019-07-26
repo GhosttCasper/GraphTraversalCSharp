@@ -16,7 +16,7 @@ namespace GraphTraversalCSharp
         private List<List<Vertex>> AdjacencyList;
         private List<Vertex> VerticesList;
         private int Time;
-        public int Size { get; }
+        public int Size { get; set; }
 
         public Graph(int size, string[] strs)
         {
